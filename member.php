@@ -17,10 +17,10 @@ if ($_SESSION['name'] == "Admin") {
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="SideNavigationMenu.css">
-    <link rel="stylesheet" href="content.css">
-    <link rel="stylesheet" href="member_style.css">
-    <link rel="stylesheet" href="table.css">
+    <link rel="stylesheet" href="style/SideNavigationMenu.css">
+    <link rel="stylesheet" href="style/content.css">
+    <link rel="stylesheet" href="style/member_style.css">
+    <link rel="stylesheet" href="style/table.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>圖書館空間預約系統</title>
@@ -193,90 +193,8 @@ if ($_SESSION['name'] == "Admin") {
             <a href="#" id="bye">登出！</a>
         </form>
     </div>
+    <script src="script/member-script.js"></script>
 
-    <script>
-        function Search() {
-            var input, filter, table, tr, td, i, txtValue;
-            input = document.getElementById("reservation_date");
-            filter = input.value.toUpperCase();
-            table = document.querySelector("table");
-            tr = table.getElementsByTagName("tr");
-            for (i = 0; i < tr.length; i++) {
-                td = tr[i].getElementsByTagName("td")[0];
-                if (td) {
-                    txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-        }
-
-        $(".menuToggle").click("on", function() {
-            $(".navigation").toggleClass("open");
-        });
-        $(".list").click("on", function() {
-            $(".list").removeClass("active");
-            $(this).addClass("active");
-        });
-
-
-        $("#HomePage").click("on", function() {
-            $("#pg1").addClass("show");
-            $("#pg2").removeClass("show");
-            $("#pg3").removeClass("show");
-            $("#pg4").removeClass("show");
-            $("#pg5").removeClass("show");
-        });
-
-        $("#GoR").click("on", function() {
-            $("#pg1").removeClass("show");
-            $("#pg2").removeClass("show");
-            $("#pg3").addClass("show");
-            $("#pg4").removeClass("show");
-            $("#pg5").removeClass("show");
-        });
-
-        $("#DeleteR").click("on", function() {
-            $("#pg1").removeClass("show");
-            $("#pg2").removeClass("show");
-            $("#pg3").removeClass("show");
-            $("#pg4").addClass("show");
-            $("#pg5").removeClass("show");
-        });
-
-        $("#DATA").click("on", function() {
-            $("#pg1").removeClass("show");
-            $("#pg2").addClass("show");
-            $("#pg3").removeClass("show");
-            $("#pg4").removeClass("show");
-            $("#pg5").removeClass("show");
-        });
-
-        $("#Logout").click("on", function() {
-            $("#pg1").removeClass("show");
-            $("#pg2").removeClass("show");
-            $("#pg3").removeClass("show");
-            $("#pg4").removeClass("show");
-            $("#pg5").addClass("show");
-        });
-
-        $("#bye").click("on", function() {
-            window.location.href = "index.php";
-        });
-
-        $(".DelR").click("on", function() {
-            var id = $(this).prev().text();
-            $.post("delete.php", {
-                id: id
-            }, function(data) {
-                // alert(data);
-                location.reload();
-            });
-        });
-    </script>
 </body>
 
 </html>

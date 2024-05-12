@@ -22,7 +22,7 @@
         header("Location: backend.php");
     }
 
-    if (isset($_POST['ismodify']) and $_POST['ismodify']) {
+    if (isset($_POST['ismodify']) and $_POST['ismodify'] and $_POST['account'] != "user") {
         $password = $_POST['password'];
         $account = $_POST['account'];
         $sql = "UPDATE `Data` SET `password` = '$password' WHERE `account` = '$account'";
@@ -36,7 +36,7 @@
         }
     }
     // modify user password in admin page
-    if (isset($_POST['isdel']) and $_POST['isdel']) {
+    if (isset($_POST['isdel']) and $_POST['isdel'] and $_POST['account'] != "user") {
         $account = $_POST['account'];
         $sql = "DELETE FROM `Data` WHERE `account` = '$account'";
         $result = mysqli_query($con, $sql);
@@ -49,7 +49,7 @@
         }
     }
 
-    if (isset($_POST['isinsert']) and $_POST['isinsert']) {
+    if (isset($_POST['isinsert']) and $_POST['isinsert'] and $_POST['account'] != "user") {
         $account = $_POST['account'];
         $password = $_POST['password'];
         $sql = "INSERT INTO `Data`(`name`, `account`, `password`) VALUES ('CAT', '$account', '$password')";

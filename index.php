@@ -12,7 +12,7 @@ require_once 'dp.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
     <!--Stylesheet-->
-    <link rel="stylesheet" href="login_style.css" media="screen">
+    <link rel="stylesheet" href="style/login_style.css" media="screen">
     <!-- <style media="screen" >
         
     </style> -->
@@ -55,6 +55,8 @@ require_once 'dp.php';
             </div>
         </form>
     <?php endif; ?>
+    <script src="script/index-script.js"></script>
+
 </body>
 
 </html>
