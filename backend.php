@@ -2,10 +2,405 @@
 session_start();
 require_once 'dp.php';
 
-if ($_SESSION['is_login'] == FALSE and $_SESSION['name'] != "Admin") {
+if ($_SESSION['is_login'] == FALSE or $_SESSION['name'] != "Admin") {
     header("Location: index.php");
 }
 
 // echo "Hi {$_SESSION['name']} Login Successful!";
 ?>
 
+
+<!-- show the all user data and allow admin to search everyone's reservation data -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Backend</title>
+    <link rel="stylesheet" href="SideNavigationMenu.css">
+    <link rel="stylesheet" href="table.css">
+    <link rel="stylesheet" href="content.css">
+    <link rel="stylesheet" href="backend_style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <!-- <h1>Backend</h1> -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+    <?php
+    if (isset($_SESSION['msg'])) {
+        echo "<script>alert('{$_SESSION['msg']}')</script>";
+        unset($_SESSION['msg']);
+    }
+    ?>
+
+    <div class="navigation">
+        <div class="menuToggle"></div>
+        <ul>
+            <li class="list active" style="--clr:#f44336;">
+                <a href="#" id="HomePage">
+                    <span class="icon"><ion-icon name="home-outline"></ion-icon></span>
+                    <span class="text">Home</span>
+                </a>
+            </li>
+            <li class="list" style="--clr:#ffa117;">
+                <a href="#" id="DATA">
+                    <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
+                    <span class="text">使用者資訊</span>
+                </a>
+            </li>
+            <!-- <li class="list" style="--clr:#0fc70f;">
+                <a href="#" id="GoR">
+                    <span class="icon"><ion-icon name="chatbubble-outline"></ion-icon></span>
+                    <span class="text">前往預約！</span>
+                </a>
+            </li>
+            <li class="list" style="--clr:#2196f3;">
+                <a href="#" id="DeleteR">
+                    <span class="icon"><ion-icon name="camera-outline"></ion-icon></span>
+                    <span class="text">修改預約！</span>
+                </a>
+            </li> -->
+            <li class="list" style="--clr:#b145e9;">
+                <a href="#" id="Logout">
+                    <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
+                    <span class="text">Setting</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="content show" id="pg1">
+        <h1>所有預約資訊！</h1>
+        <form method="get" class="Query">
+            <!-- <h3>查詢預約資訊</h3> -->
+            <!-- <label for="reservation_date" id="res_date">輸入帳號：</label> -->
+            <input type="text" id="reservation_data" name="reservation_date" placeholder="依照帳號來過濾..." onkeyup="Search()">
+        </form>
+        <!-- 幫任何人修改 / 新增 / 刪除預約資訊 -->
+        <form method="post" class="reserve_update_admin">
+            <h3>修改 / 刪除 / 新增預約資訊</h3>
+            <label for="account" id="acc">欲更動的ID & 帳號：</label>
+            <!-- 顯示database中的所有id select-->
+            <select id="_id" name="account">
+                <?php
+                $sql = "SELECT * FROM `reservation`";
+                $result = mysqli_query($con, $sql);
+                $rows = mysqli_num_rows($result);
+                if ($rows == 0) {
+                    echo "<option value=''>No data</option>";
+                }
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<option value='{$row['id']}'>{$row['id']}</option>";
+                }
+                ?>
+            </select>
+            <input type="text" id="account" name="account" placeholder="欲更動的帳號">
+            <label for="date">預約日期：</label>
+            <input type="date" id="date" name="date" required>
+            <label for="time">預約時間：</label>
+            <select id="time" name="time" required>
+                <option value="09:00-12:00">09:00-12:00</option>
+                <option value="13:00-16:00">13:00-16:00</option>
+                <option value="17:00-20:00">17:00-20:00</option>
+            </select>
+            <label for="people">預約人數：</label>
+            <input type="number" id="people" name="people" min="1" max="14" required>
+            <label for="space">預約空間：</label>
+            <select id="space" name="space" required>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+            </select><br><br>
+            <a id="modify_user_res" class="admin_update">修改！</a><br><br><br><br>
+            <a id="insert_user_res" class="admin_update">新增！</a><br><br><br><br>
+            <a id="del_user_res" class="admin_update">刪除！</a>
+        </form>
+        <table id="_2">
+            <tr>
+                <th>Account</th>
+                <th>Password</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>People</th>
+                <th>Room</th>
+                <th>ID</th>
+            </tr>
+            <?php
+            $sql = "SELECT * FROM `reservation`";
+            $result = mysqli_query($con, $sql);
+            $rows = mysqli_num_rows($result);
+            if ($rows == 0) {
+                echo "<tr><td colspan='7'>No data</td></tr>";
+            }
+            while ($row = mysqli_fetch_assoc($result)) {
+                $sql2 = "SELECT * FROM `Data` WHERE `account` = '{$row['account']}'";
+                $password = mysqli_fetch_assoc(mysqli_query($con, $sql2))['password'];
+                echo "<tr>";
+                echo "<td>{$row['account']}</td>";
+                echo "<td>{$password}</td>";
+                echo "<td>{$row['date']}</td>";
+                echo "<td>{$row['time']}</td>";
+                echo "<td>{$row['people']}</td>";
+                echo "<td>{$row['room']}</td>";
+                echo "<td>{$row['id']}</td>";
+                echo "</tr>";
+            }
+            ?>
+        </table>
+    </div>
+
+    <div class="content" id="pg2">
+        <h1>使用者資訊！</h1>
+        <form method="post" class="Modify Query">
+            <h3>修改 / 刪除 / 新增使用者</h3>
+            <label for="account_data" id="acc_data">欲修改 / 新增 / 刪除的帳號：</label>
+            <input type="text" id="account_data" name="account_data">
+            <label for="password_data" id=psw_data">欲修改 / 新增的密碼：</label>
+            <input type="text" id="password_data" name="password_data">
+            <a id="modify_user_psw">修改！</a><br><br>
+            <a id="insert_user">新增！</a><br><br>
+            <a id="del_user">刪除！</a>
+        </form>
+        <table>
+            <tr>
+                <th>Account</th>
+                <th>Password</th>
+            </tr>
+            <?php
+            $sql = "SELECT * FROM `Data`";
+            $result = mysqli_query($con, $sql);
+            $rows = mysqli_num_rows($result);
+            if ($rows == 0) {
+                echo "<tr><td colspan='2'>No data</td></tr>";
+            }
+            while ($row = mysqli_fetch_assoc($result)) {
+                if ($row['account'] == "user") {
+                    continue;
+                }
+                echo "<tr>";
+                echo "<td>{$row['account']}</td>";
+                echo "<td>{$row['password']}</td>";
+                echo "</tr>";
+            }
+            ?>
+        </table>
+    </div>
+
+    <div class="content" id="pg5">
+        <!-- <p>看要改密碼還是刪除帳號還是登出都可以！</p> -->
+        <form action="Update.php" method="post" id="del_form">
+            <h3>更改密碼 / 登出</h3>
+            <label for="old_psw">Old Password: * </label>
+            <input type="password" id="old_psw" name="old_psw" required>
+            <label for="nw_password">New Password:</label>
+            <input type="password" id="nw_password" name="nw_password">
+            <label for="cf_password">Confirm Password:</label>
+            <input type="password" id="cf_password" name="cf_password">
+            <button type="submit" name="change">Change Password</button>
+            <!-- <button id="bye">登出！</button> -->
+            <a href="#" id="bye">登出！</a>
+        </form>
+    </div>
+
+    <script>
+        $(".menuToggle").click("on", function() {
+            $(".navigation").toggleClass("open");
+        });
+        $(".list").click("on", function() {
+            $(".list").removeClass("active");
+            $(this).addClass("active");
+        });
+
+        $("#HomePage").click("on", function() {
+            $("#pg1").addClass("show");
+            $("#pg2").removeClass("show");
+            $("#pg3").removeClass("show");
+            $("#pg4").removeClass("show");
+            $("#pg5").removeClass("show");
+        });
+
+        $("#GoR").click("on", function() {
+            $("#pg1").removeClass("show");
+            $("#pg2").removeClass("show");
+            $("#pg3").addClass("show");
+            $("#pg4").removeClass("show");
+            $("#pg5").removeClass("show");
+        });
+
+        $("#DeleteR").click("on", function() {
+            $("#pg1").removeClass("show");
+            $("#pg2").removeClass("show");
+            $("#pg3").removeClass("show");
+            $("#pg4").addClass("show");
+            $("#pg5").removeClass("show");
+        });
+
+        $("#DATA").click("on", function() {
+            $("#pg1").removeClass("show");
+            $("#pg2").addClass("show");
+            $("#pg3").removeClass("show");
+            $("#pg4").removeClass("show");
+            $("#pg5").removeClass("show");
+        });
+
+        $("#Logout").click("on", function() {
+            $("#pg1").removeClass("show");
+            $("#pg2").removeClass("show");
+            $("#pg3").removeClass("show");
+            $("#pg4").removeClass("show");
+            $("#pg5").addClass("show");
+        });
+
+        $("#bye").click("on", function() {
+            window.location.href = "index.php";
+        });
+        
+
+        function Search() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("reservation_data");
+            filter = input.value.toUpperCase();
+            table = document.querySelector("table");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        $("#modify_user_psw").click("on", function() {
+            var account = $("#account_data").val();
+            var password = $("#password_data").val();
+            var ismodify = true;
+            $.ajax({
+                url: "modify.php",
+                type: "POST",
+                data: {
+                    account: account,
+                    password: password,
+                    ismodify: ismodify
+                },
+                success: function(data) {
+                    // alert(data);
+                    location.reload();
+                }
+            });
+        });
+
+        $("#del_user").click("on", function() {
+            var account = $("#account_data").val();
+            var isdel = true;
+            $.ajax({
+                url: "modify.php",
+                type: "POST",
+                data: {
+                    account: account,
+                    isdel: isdel
+                },
+                success: function(data) {
+                    // alert(data);
+                    location.reload();
+                }
+            });
+        });
+
+        $("#insert_user").click("on", function() {
+            var account = $("#account_data").val();
+            var password = $("#password_data").val();
+            var isinsert = true;
+            $.ajax({
+                url: "modify.php",
+                type: "POST",
+                data: {
+                    account: account,
+                    password: password,
+                    isinsert: isinsert
+                },
+                success: function(data) {
+                    // alert(data);
+                    location.reload();
+                }
+            });
+        });
+
+        $("#modify_user_res").click("on", function() {
+            var old_id = $("#_id").val();
+            var account = $("#account").val();
+            var date = $("#date").val();
+            var time = $("#time").val();
+            var people = $("#people").val();
+            var space = $("#space").val();
+            var res_ismodify = true;
+            $.ajax({
+                url: "modify.php",
+                type: "POST",
+                data: {
+                    old_id: old_id,
+                    account: account,
+                    date: date,
+                    time: time,
+                    people: people,
+                    space: space,
+                    res_ismodify: res_ismodify
+                },
+                success: function(data) {
+                    // alert(data);
+                    location.reload();
+                }
+            });
+        });
+        $("#del_user_res").click("on", function() {
+            var old_id = $("#_id").val();
+            var res_isdel = true;
+            $.ajax({
+                url: "modify.php",
+                type: "POST",
+                data: {
+                    old_id: old_id,
+                    res_isdel: res_isdel
+                },
+                success: function(data) {
+                    // alert(data);
+                    location.reload();
+                }
+            });
+        });
+
+        $("#insert_user_res").click("on", function() {
+            var account = $("#account").val();
+            var date = $("#date").val();
+            var time = $("#time").val();
+            var people = $("#people").val();
+            var space = $("#space").val();
+            var res_isinsert = true;
+            $.ajax({
+                url: "modify.php",
+                type: "POST",
+                data: {
+                    account: account,
+                    date: date,
+                    time: time,
+                    people: people,
+                    space: space,
+                    res_isinsert: res_isinsert
+                },
+                success: function(data) {
+                    // alert(data);
+                    location.reload();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
