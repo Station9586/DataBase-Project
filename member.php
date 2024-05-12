@@ -20,19 +20,31 @@ if ($_SESSION['name'] == "Admin") {
     <link rel="stylesheet" href="SideNavigationMenu.css">
     <link rel="stylesheet" href="content.css">
     <link rel="stylesheet" href="member_style.css">
+    <link rel="stylesheet" href="table.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>圖書館空間預約系統</title>
 </head>
 
 <body>
+    <script>
+        function check_qry() {
+            alert("Hi, <?php echo $_SESSION['account']; ?> Welcome!");
+            if (<?php isset($_SESSION["qry"]) && $_SESSION["qry"]; ?>) {
+                $('.content').removeClass('active');
+                $("#pg2").addClass("active");
+            }
+        }
+
+        $(window).load(check_qry);
+    </script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <?php
-        if (isset($_SESSION['msg'])) {
-            echo "<script>alert('{$_SESSION['msg']}')</script>";
-            unset($_SESSION['msg']);
-        }
+    if (isset($_SESSION['msg'])) {
+        echo "<script>alert('{$_SESSION['msg']}')</script>";
+        unset($_SESSION['msg']);
+    }
     ?>
     <div class="navigation">
         <div class="menuToggle"></div>
@@ -58,7 +70,7 @@ if ($_SESSION['name'] == "Admin") {
             <li class="list" style="--clr:#2196f3;">
                 <a href="#" id="DeleteR">
                     <span class="icon"><ion-icon name="camera-outline"></ion-icon></span>
-                    <span class="text">刪除預約！</span>
+                    <span class="text">修改預約！</span>
                 </a>
             </li>
             <li class="list" style="--clr:#b145e9;">
@@ -70,6 +82,7 @@ if ($_SESSION['name'] == "Admin") {
         </ul>
     </div>
 
+    <!-- 完成 -->
     <div class="content show" id="pg1">
         <h1>圖書館空間預約系統</h1>
         <h2>Hi, <?php echo $_SESSION['account']; ?> Welcome!</h2>
@@ -77,9 +90,48 @@ if ($_SESSION['name'] == "Admin") {
         <img src="img/homepage.png" width="667" height="500" id="img1">
     </div>
 
+    <!-- 完成 -->
+    <div class="content" id="pg2">
+        <h1>已預約資訊</h1>
+        <p>Hi, <?php echo $_SESSION['account']; ?>, 以下是您的預約資訊！</p>
+        <form method="get" class="Query">
+            <h3>查詢預約資訊</h3>
+            <label for="reservation_date" id="res_date">輸入日期：</label>
+            <input type="text" id="reservation_date" name="reservation_date" placeholder="依照日期來搜尋" onkeyup="Search()">
+            <!-- <button type="submit" class="qry">查詢</button> -->
+            <!-- <button type="submit" name="showall" class="qry">顯示全部</button> -->
+        </form>
+        <table>
+            <tr>
+                <th>預約日期</th>
+                <th>預約時間</th>
+                <th>預約人數</th>
+                <th>預約空間</th>
+                <th>預約編號</th>
+                <th>刪除</th>
+            </tr>
+            <?php
+            $account = $_SESSION['account'];
+            $sql = "SELECT * FROM `reservation` WHERE `account` = '$account'";
+            $result = mysqli_query($con, $sql);
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo "<tr>";
+                echo "<td>{$row['date']}</td>";
+                echo "<td>{$row['time']}</td>";
+                echo "<td>{$row['people']}</td>";
+                echo "<td>{$row['room']}</td>";
+                echo "<td>{$row['id']}</td>";
+                echo "<td class='DelR'>x</td>";
+                echo "</tr>";
+            }
+            ?>
+        </table>
+    </div>
+
+    <!-- 完成 -->
     <div class="content" id="pg3">
-        <h1>前往預約！</h1>
         <form action="reservation.php" method="post">
+            <h3>前往預約！</h3>
             <label for="date">預約日期：</label>
             <input type="date" id="date" name="date" required>
             <label for="time">預約時間：</label>
@@ -96,38 +148,51 @@ if ($_SESSION['name'] == "Admin") {
                 <option value="B">B</option>
                 <option value="C">C</option>
             </select>
-            <button type="submit">預約！</button>
+            <button type="submit" name="reserve">預約！</button>
         </form>
     </div>
 
-    <!-- <div class="content" id="pg4">
-        <h1>刪除預約！</h1>
-        <form action="delete.php" method="post">
-            <label for="date">預約日期：</label>
+    <!-- 完成 -->
+    <div class="content" id="pg4">
+        <form action="reservation.php" method="post">
+            <h3>修改預約！</h3>
+            <label for="old_id">預約編號：</label>
+            <select id="old_id" name="old_id" required>
+                <?php
+                $account = $_SESSION['account'];
+                $sql = "SELECT id FROM `reservation` WHERE `account` = '$account'";
+                $result = mysqli_query($con, $sql);
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<option value='{$row['id']}'>{$row['id']}</option>";
+                }
+                ?>
+            </select>
+            <label for="date">欲修改日期：</label>
             <input type="date" id="date" name="date" required>
-            <label for="time">預約時間：</label>
+            <label for="time">欲修改時間：</label>
             <select id="time" name="time" required>
                 <option value="09:00-12:00">09:00-12:00</option>
                 <option value="13:00-16:00">13:00-16:00</option>
                 <option value="17:00-20:00">17:00-20:00</option>
             </select>
-            <label for="people">預約人數：</label>
-            <input type="number" id="people" name="people" min="1" max="10" required>
-            <label for="space">預約空間：</label>
+            <label for="people">預修改人數：</label>
+            <input type="number" id="people" name="people" min="1" max="14" required>
+            <label for="space">欲修改空間：</label>
             <select id="space" name="space" required>
                 <option value="A">A</option>
                 <option value="B">B</option>
                 <option value="C">C</option>
             </select>
-            <input type="submit" value="Submit">
+            <button type="submit" name="update" id="modify">修改！</button>
         </form>
-    </div> -->
+    </div>
 
+    <!-- 完成 -->
     <div class="content" id="pg5">
-        <h1>Setting</h1>
         <!-- <p>看要改密碼還是刪除帳號還是登出都可以！</p> -->
-        <form action="Update.php" method="post">
-            <label for="old_psw">Old Password: </label>
+        <form action="Update.php" method="post" id="del_form">
+            <h3>更改密碼 / 刪除帳號 / 登出</h3>
+            <label for="old_psw">Old Password: * </label>
             <input type="password" id="old_psw" name="old_psw" required>
             <label for="nw_password">New Password:</label>
             <input type="password" id="nw_password" name="nw_password">
@@ -140,8 +205,26 @@ if ($_SESSION['name'] == "Admin") {
         </form>
     </div>
 
-
     <script>
+        function Search() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("reservation_date");
+            filter = input.value.toUpperCase();
+            table = document.querySelector("table");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
         $(".menuToggle").click("on", function() {
             $(".navigation").toggleClass("open");
         });
@@ -193,6 +276,16 @@ if ($_SESSION['name'] == "Admin") {
 
         $("#bye").click("on", function() {
             window.location.href = "index.php";
+        });
+
+        $(".DelR").click("on", function() {
+            var id = $(this).prev().text();
+            $.post("delete.php", {
+                id: id
+            }, function(data) {
+                // alert(data);
+                location.reload();
+            });
         });
     </script>
 </body>
