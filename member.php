@@ -52,13 +52,13 @@ if ($_SESSION['name'] == "Admin") {
             </li>
             <li class="list" style="--clr:#0fc70f;">
                 <a href="#" id="GoR">
-                    <span class="icon"><ion-icon name="chatbubble-outline"></ion-icon></span>
+                    <span class="icon"><ion-icon name="create-outline"></ion-icon></ion-icon></span>
                     <span class="text">前往預約！</span>
                 </a>
             </li>
             <li class="list" style="--clr:#2196f3;">
                 <a href="#" id="DeleteR">
-                    <span class="icon"><ion-icon name="camera-outline"></ion-icon></span>
+                    <span class="icon"><ion-icon name="build-outline"></ion-icon></span>
                     <span class="text">修改預約！</span>
                 </a>
             </li>
