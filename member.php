@@ -27,17 +27,6 @@ if ($_SESSION['name'] == "Admin") {
 </head>
 
 <body>
-    <script>
-        function check_qry() {
-            alert("Hi, <?php echo $_SESSION['account']; ?> Welcome!");
-            if (<?php isset($_SESSION["qry"]) && $_SESSION["qry"]; ?>) {
-                $('.content').removeClass('active');
-                $("#pg2").addClass("active");
-            }
-        }
-
-        $(window).load(check_qry);
-    </script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <?php
