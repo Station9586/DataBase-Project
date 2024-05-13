@@ -79,11 +79,11 @@ if ($_SESSION['is_login'] == FALSE or $_SESSION['name'] != "Admin") {
             <input type="text" id="reservation_data" name="reservation_date" placeholder="依照帳號來過濾..." onkeyup="Search()">
         </form>
         <!-- 幫任何人修改 / 新增 / 刪除預約資訊 -->
-        <form method="post" class="reserve_update_admin">
+        <form method="post" class="reserve_update_admin" action="modify.php">
             <h3>修改 / 刪除 / 新增預約資訊</h3>
-            <label for="account" id="acc">欲更動的ID & 帳號：</label>
+            <label for="old_id" id="acc">欲更動的ID & 帳號：</label>
             <!-- 顯示database中的所有id select-->
-            <select id="_id" name="account">
+            <select id="_id" name="old_id">
                 <?php
                 $sql = "SELECT * FROM `reservation`";
                 $result = mysqli_query($con, $sql);
@@ -98,7 +98,7 @@ if ($_SESSION['is_login'] == FALSE or $_SESSION['name'] != "Admin") {
             </select>
             <input type="text" id="account" name="account" placeholder="欲更動的帳號">
             <label for="date">預約日期：</label>
-            <input type="date" id="date" name="date" required>
+            <input type="date" id="date" name="date">
             <label for="time">預約時間：</label>
             <select id="time" name="time" required>
                 <option value="09:00-12:00">09:00-12:00</option>
@@ -106,16 +106,19 @@ if ($_SESSION['is_login'] == FALSE or $_SESSION['name'] != "Admin") {
                 <option value="17:00-20:00">17:00-20:00</option>
             </select>
             <label for="people">預約人數：</label>
-            <input type="number" id="people" name="people" min="1" max="14" required>
+            <input type="number" id="people" name="people" min="1" max="14">
             <label for="space">預約空間：</label>
-            <select id="space" name="space" required>
+            <select id="space" name="space">
                 <option value="A">A</option>
                 <option value="B">B</option>
                 <option value="C">C</option>
             </select><br><br>
-            <a id="modify_user_res" class="admin_update">修改！</a><br><br><br><br>
-            <a id="insert_user_res" class="admin_update">新增！</a><br><br><br><br>
-            <a id="del_user_res" class="admin_update">刪除！</a>
+            <!-- <a id="modify_user_res" class="admin_update">修改！</a><br><br><br><br> -->
+            <button name="res_ismodify" type="submit">修改！</button>
+            <button name="res_isinsert" type="submit">新增！</button>
+            <button name="res_isdel" type="submit">刪除！</button>
+            <!-- <a id="insert_user_res" class="admin_update">新增！</a><br><br><br><br> -->
+            <!-- <a id="del_user_res" class="admin_update">刪除！</a> -->
         </form>
         <table id="_2">
             <tr>
@@ -153,15 +156,15 @@ if ($_SESSION['is_login'] == FALSE or $_SESSION['name'] != "Admin") {
 
     <div class="content" id="pg2">
         <h1>使用者資訊！</h1>
-        <form method="post" class="Modify Query">
+        <form method="post" class="Modify Query" action="modify.php">
             <h3>修改 / 刪除 / 新增使用者</h3>
-            <label for="account_data" id="acc_data">欲修改 / 新增 / 刪除的帳號：</label>
-            <input type="text" id="account_data" name="account_data">
-            <label for="password_data" id=psw_data">欲修改 / 新增的密碼：</label>
-            <input type="text" id="password_data" name="password_data">
-            <a id="modify_user_psw">修改！</a><br><br>
-            <a id="insert_user">新增！</a><br><br>
-            <a id="del_user">刪除！</a>
+            <label for="account" id="acc_data">欲修改 / 新增 / 刪除的帳號：</label>
+            <input type="text" id="account_data" name="account">
+            <label for="password" id="psw_data">欲修改 / 新增的密碼：</label>
+            <input type="text" id="password_data" name="password">
+            <button name="ismodify" type="submit">修改！</button>
+            <button name="isinsert" type="submit">新增！</button>
+            <button name="isdel" type="submit">刪除！</button>
         </form>
         <table>
             <tr>
@@ -190,7 +193,7 @@ if ($_SESSION['is_login'] == FALSE or $_SESSION['name'] != "Admin") {
 
     <div class="content" id="pg5">
         <!-- <p>看要改密碼還是刪除帳號還是登出都可以！</p> -->
-        <form action="Update.php" method="post" id="del_form">
+        <form action="admin_update.php" method="post" id="del_form">
             <h3>更改密碼 / 登出</h3>
             <label for="old_psw">Old Password: * </label>
             <input type="password" id="old_psw" name="old_psw" required>
