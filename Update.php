@@ -34,7 +34,7 @@ if (isset($_POST['change'])) {
             if ($result) {
                 $_SESSION['msg'] = "Password changed successfully!";
                 echo "Password changed successfully!";
-                header("Location: index.php");
+                header("Location: member.php");
             } else {
                 $_SESSION['msg'] = "Password changed failed!";
                 echo "Password changed failed!";
