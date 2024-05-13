@@ -233,7 +233,7 @@ form #reservation_date::placeholder {
     font-weight: 500;
     text-align: center;
     margin-top: 20px;
-    height: 520px;
+    height: 650px;
     border-radius: 10px;
     cursor: pointer;
 }
@@ -255,7 +255,7 @@ form #reservation_date::placeholder {
     margin-top: 20px;
     border-radius: 10px;
     cursor: pointer;
-    height: 750px;
+    height: 950px;
     line-height: 10px;
     transform: translate(300px, -330px);
 }
@@ -263,5 +263,8 @@ form #reservation_date::placeholder {
 .admin_update {
     transform: translateX(-195px);
     /* padding: 20px; */
+}
 
+#del_form {
+    height: 570px;
 }
