@@ -75,7 +75,7 @@ $(".DelR").click("on", function () {
     $.post("delete.php", {
         id: id
     }, function (data) {
-        // alert(data);
+        alert("Delete Successful");
         location.reload();
     });
 });
